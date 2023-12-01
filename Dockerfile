@@ -8,6 +8,11 @@ ARG S6_VERSION=3.1.5.0
 ARG UBUNTU_MIRROR=http://repo.ugm.ac.id/ubuntu
 ARG SECURITY_MIRROR=http://security.ubuntu.com/ubuntu
 
+ENV DEBIAN_FRONTEND noninteractive
+# ADJUST LOCAL TIME
+ENV TZ Asia/Jakarta
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 RUN touch /etc/apt/sources.list
 RUN echo "deb ${UBUNTU_MIRROR}/ ${UBUNTU_VERSION} main restricted universe multiverse" > /etc/apt/sources.list
 RUN echo "deb ${UBUNTU_MIRROR}/ ${UBUNTU_VERSION}-updates main restricted universe multiverse" >> /etc/apt/sources.list

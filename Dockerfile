@@ -1,11 +1,18 @@
-ARG UBUNTU_VERSION=22.04
+ARG UBUNTU_VERSION=jammy
 
 FROM ubuntu:${UBUNTU_VERSION} AS base
 LABEL maintainer="<Aditya Prima> aprimediet@gmail.com"
 
+ARG UBUNTU_VERSION=jammy
 ARG S6_VERSION=3.1.5.0
+ARG UBUNTU_MIRROR=http://repo.ugm.ac.id/ubuntu
+ARG SECURITY_MIRROR=http://security.ubuntu.com/ubuntu
 
-WORKDIR /root
+RUN touch /etc/apt/sources.list
+RUN echo "deb ${UBUNTU_MIRROR}/ ${UBUNTU_VERSION} main restricted universe multiverse" > /etc/apt/sources.list
+RUN echo "deb ${UBUNTU_MIRROR}/ ${UBUNTU_VERSION}-updates main restricted universe multiverse" >> /etc/apt/sources.list
+RUN echo "deb ${UBUNTU_MIRROR}/ ${UBUNTU_VERSION}-backports main restricted universe multiverse" >> /etc/apt/sources.list
+RUN echo "deb ${SECURITY_MIRROR}/ ${UBUNTU_VERSION}-security main restricted universe multiverse" >> /etc/apt/sources.list
 
 # Install base dependencies
 RUN --mount=type=cache,target=/var/cache/apt/archives \

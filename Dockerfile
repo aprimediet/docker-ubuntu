@@ -35,7 +35,7 @@ RUN tar -Jxpf /tmp/s6-overlay-noarch.tar.xz -C / && \
 
 # Remove S6-Overlay
 RUN rm -f /tmp/s6-overlay-noarch.tar.xz && \
-    rm -f /tmp/s6-overlay-x76_64.tar.xz && \
+    rm -f /tmp/s6-overlay-x86_64.tar.xz && \
     rm -f /tmp/s6-overlay-symlinks-noarch.tar.xz
 
 # Clean APT Cache

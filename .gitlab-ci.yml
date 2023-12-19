@@ -1,0 +1,62 @@
+stages:
+  - build
+
+.build:
+  image: docker:20.10.16
+  services:
+    - name: docker:20.10.16-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_DRIVER: "overlay"
+  before_script:
+    - "docker login ${CI_REGISTRY} -u gitlab-ci-token -p ${CI_JOB_TOKEN}"
+    - "docker login -u ${HUB_USERNAME} -p ${HUB_TOKEN}"
+  after_script:
+    - "docker logout ${CI_REGISTRY}"
+    - "docker logout ${HUB_REGISTRY}"
+  
+build_jammy:
+  stage: build
+  extends: .build
+  only:
+    - master
+  script:
+    - DOCKER_BUILDKIT=1 docker image build --build-arg="UBUNTU_VERSION=jammy" -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:jammy -t ${HUB_IMAGE_PATH}:latest -t ${HUB_IMAGE_PATH}:jammy .
+    - docker image push ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest
+    - docker image push ${CI_REGISTRY}/${CI_PROJECT_PATH}:jammy
+    - docker image push ${HUB_IMAGE_PATH}:latest
+    - docker image push ${HUB_IMAGE_PATH}:jammy
+
+build_focal:
+  stage: build
+  extends: .build
+  only:
+    - master
+  script:
+    - DOCKER_BUILDKIT=1 docker image build --build-arg="UBUNTU_VERSION=focal" -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:focal -t ${HUB_IMAGE_PATH}:focal .
+    - docker image push ${CI_REGISTRY}/${CI_PROJECT_PATH}:focal
+    - docker image push ${HUB_IMAGE_PATH}:focal
+
+build_bionic:
+  stage: build
+  extends: .build
+  only:
+    - master
+  script:
+    - DOCKER_BUILDKIT=1 docker image build --build-arg="UBUNTU_VERSION=bionic" -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:bionic -t ${HUB_IMAGE_PATH}:bionic .
+    - docker image push ${CI_REGISTRY}/${CI_PROJECT_PATH}:bionic
+    - docker image push ${HUB_IMAGE_PATH}:bionic
+
+build_xenial:
+  stage: build
+  extends: .build
+  only:
+    - master
+  script:
+    - DOCKER_BUILDKIT=1 docker image build --build-arg="UBUNTU_VERSION=xenial" -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:xenial -t ${HUB_IMAGE_PATH}:xenial .
+    - docker image push ${CI_REGISTRY}/${CI_PROJECT_PATH}:xenial
+    - docker image push ${HUB_IMAGE_PATH}:xenial
